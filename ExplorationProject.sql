@@ -1,11 +1,15 @@
--- *Test that data has been correctly imported
-SELECT DISTINCT
-    location
+/*
+SQL Data Exploration Project
+*/
+
+-- Test that data has been correctly imported
+SELECT
+	*
 FROM
     ExplorationProject.coviddeaths
 LIMIT 15
     
--- *Total death rate by country
+-- Total death rate by country
 SELECT 
     location,
     SUM(total_cases) AS TotalCases,
@@ -18,7 +22,7 @@ WHERE continent <> ''
 GROUP BY location
 -- ORDER BY DeathRate DESC
 
--- *Total death rate by date
+-- Total death rate by date
 SELECT 
     location,
     date,
@@ -29,7 +33,7 @@ FROM
     ExplorationProject.coviddeaths
 ORDER BY location , date
 
--- *Total death rate by date in the U.S.
+-- Total death rate by date in the U.S.
 SELECT 
     location,
     date,
@@ -42,7 +46,7 @@ WHERE
     location = 'United States'
 ORDER BY location , date
 
--- *Total cases vs population in the U.S.
+-- Total cases vs population in the U.S.
 SELECT 
     location,
     date,
@@ -55,7 +59,7 @@ WHERE
     location = 'United States'
 ORDER BY location , date
 
--- *Countries with highest case rate relative to population as of 2023-11-02
+-- Countries with highest case rate relative to population as of 2023-11-02
 SELECT
     location,
     MAX(ROUND((total_cases / population) * 100, 2)) AS PercentInfected
@@ -65,8 +69,8 @@ WHERE continent <> ''
 GROUP BY location
 ORDER BY PercentInfected DESC
 
--- *Countries with highest case rate relative to population as of 2021-04-30
--- *(vaccines started to become available)
+-- Countries with highest case rate relative to population as of 2021-04-30
+-- (vaccines started to become available)
 SELECT 
     location,
     MAX(ROUND((total_cases / population) * 100, 2)) AS PercentInfected
@@ -77,7 +81,7 @@ WHERE
 GROUP BY location
 ORDER BY PercentInfected DESC
 
--- *Countries with the highest death rate relative to population as of 2023-11-02
+-- Countries with the highest death rate relative to population as of 2023-11-02
 SELECT 
     location,
     population,
@@ -89,8 +93,8 @@ WHERE continent <> ''
 GROUP BY location, population
 ORDER BY PercentDeaths DESC
 
--- *Countries with the highest death rate relative to population as of 2023-04-30
--- *(about when vaccines started to become available)
+-- Countries with the highest death rate relative to population as of 2023-04-30
+-- (about when vaccines started to become available)
 SELECT 
     location,
     population,
@@ -102,7 +106,7 @@ WHERE date = '2021-04-30' AND continent <> ''
 GROUP BY location, population
 ORDER BY PercentDeaths DESC
 
--- *Total deaths by country as of 2023-11-02
+-- Total deaths by country as of 2023-11-02
 SELECT 
     location,
     MAX(CAST(total_deaths AS SIGNED)) AS TotalDeathCount
@@ -113,7 +117,7 @@ GROUP BY location
 ORDER BY TotalDeathCount DESC
 
 
--- *Total deaths by continent as of 2023-11-02
+-- Total deaths by continent as of 2023-11-02
 SELECT 
     location,
     MAX(CAST(total_deaths AS SIGNED)) AS TotalDeathCount
@@ -131,7 +135,7 @@ GROUP BY location
 ORDER BY TotalDeathCount DESC
 
 
--- *Global new cases and new deaths by date
+-- Global new cases and new deaths by date
 SELECT 
     date,
     SUM(new_cases) AS NewCases,
@@ -142,7 +146,7 @@ WHERE continent <> ''
 GROUP BY date
 ORDER BY date
 
--- *Total global reported cases, deaths, death rate as of 2023-11-02
+-- Total global reported cases, deaths, death rate as of 2023-11-02
 SELECT 
     SUM(new_cases) AS Cases,
     SUM(new_deaths) AS Deaths,
@@ -154,7 +158,7 @@ WHERE
     continent <> ''
 ORDER BY date
 
--- *Percentage of U.S. population with full vaccination status
+-- Percentage of U.S. population with full vaccination status
 SELECT 
     D.location,
     D.date,
@@ -170,7 +174,7 @@ WHERE D.location = 'United States'
 GROUP BY D.location, D.date, D.population, V.people_fully_vaccinated
 
 
--- *Total global population vs total vaccinations as of 2023-11-02
+-- Total global population vs total vaccinations as of 2023-11-02
 SELECT 
     D.location,
     D.population,
@@ -183,7 +187,7 @@ JOIN ExplorationProject.covidvaccinations AS V
 WHERE D.location = 'World'
 GROUP BY D.location, D.population
 
--- *New vaccinations by date + rolling total by date for each country
+-- New vaccinations by date + rolling total by date for each country
 SELECT 
     D.location,
     D.date,
@@ -198,7 +202,7 @@ JOIN ExplorationProject.covidvaccinations AS V
 WHERE D.continent <> ''
 GROUP BY D.location, D.date, V.new_vaccinations
 
--- *Use CTE to show/store vaccinations administered per capita (per person) in each country
+-- Use CTE to show/store vaccinations administered per capita (per person) in each country
 WITH VaccinationsPerCapita (location, date, population, new_vaccinations, rolling_total_vaccinations)
 AS (
 SELECT 
@@ -217,8 +221,8 @@ WHERE D.continent <> ''
 GROUP BY D.location, D.date, D.population, V.new_vaccinations
 )
 
--- *Use data stored in CTE to calculate number of vaccination doses per person in each country
--- *Must be run with CTE above
+-- Use data stored in CTE to calculate number of vaccination doses per person in each country
+-- Must be run with CTE above
 SELECT 
     *,
     (rolling_total_vaccinations / population) AS VaccinationDosesPerCapita
